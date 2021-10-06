@@ -23,34 +23,20 @@ func (f FasthttpConn) ListenServer() {
 }
 
 func requestHandler(ctx *fasthttp.RequestCtx) {
-	switch string(ctx.Path()) {
-	case "/AdvEventDataModel":
-		worker.Work(ctx,"AdvEventDataModel")
-	case "/BuyingEventDataModel":
-		worker.Work(ctx,"BuyingEventDataModel")
-	case "/HardwareIndormationModel":
-		worker.Work(ctx,"HardwareIndormationModel")
-	case "/InventoryDataModel":
-		worker.Work(ctx,"InventoryDataModel")
-	case "/LocationModel":
-		worker.Work(ctx,"LocationModel")
-	case "/ClickDataModel":
-		worker.Work(ctx,"ClickDataModel")
-	case "/SwipeDataModel":
-		worker.Work(ctx,"SwipeDataModel")
-	case "/GameSessionEveryLoginDataModel":
-		worker.Work(ctx,"GameSessionEveryLoginDataModel")
-	case "/LevelBaseSessionDataModel":
-		worker.Work(ctx,"LevelBaseSessionDataModel")
-	case "/EnemyBaseEveryLoginLevelDatasModel":
-		worker.Work(ctx,"EnemyBaseEveryLoginLevelDatasModel")	
-	case "/EnemyBaseWithLevelFailDataModel":
-		worker.Work(ctx,"EnemyBaseWithLevelFailDataModel")
-	case "/ManuelFlowModel":
-		worker.Work(ctx,"ManuelFlowModel")
-	case "/OfferBehaviorModel":
-		worker.Work(ctx,"OfferBehaviorModel")		
-	default:
+
+	v,err := trimFirstRune(string(ctx.Path()))
+	if(err){
 		ctx.Error("Unsupported path", fasthttp.StatusNotFound)
+		return
 	}
+	worker.Work(ctx,v)
+}
+
+func trimFirstRune(s string) (string, bool) {
+    for i := range s {
+        if i > 0 {
+            return s[i:], false
+        }
+    }
+    return "", true
 }
