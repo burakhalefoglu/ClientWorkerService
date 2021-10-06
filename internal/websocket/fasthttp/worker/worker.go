@@ -2,6 +2,7 @@ package worker
 
 import (
 	kafka "ClientWorkerService/internal/kafka"
+	redisAdapter "ClientWorkerService/internal/redis"
 	"context"
 	"log"
 
@@ -12,7 +13,7 @@ import (
 var upgrader = websocket.FastHTTPUpgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-}
+} 
 
 
 func Work(ctx *fasthttp.RequestCtx, topic string) {
@@ -24,11 +25,10 @@ func Work(ctx *fasthttp.RequestCtx, topic string) {
 				log.Println("read:", err)
 				break
 			}
-
-			kafkaErr := kafka.Produce(context.Background(), nil, message,topic)
+			kafkaErr := kafka.Produce(context.Background(), nil, message, topic)
 			if(kafkaErr != nil){
 				log.Println(kafkaErr)
-				//TODO: Cache redis
+				redisAdapter.SetDict(topic, message)
 			}
 		}
 	})

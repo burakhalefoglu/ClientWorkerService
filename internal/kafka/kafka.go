@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/snappy"
 )
@@ -29,8 +30,9 @@ func Configure(kafkaBrokerUrls []string, clientId string, topic string) (w *kafk
 	writer = w
 	return w, nil
 }
+
 func Produce(parent context.Context, key, value []byte, topic string) (err error) {
-	Configure([]string{"192.168.43.178:9092"}, "MyClientId", topic)
+	Configure([]string{"192.168.43.178:9092"}, uuid.New().String(), topic)
 	message := kafka.Message{
 		Key:   key,
 		Value: value,

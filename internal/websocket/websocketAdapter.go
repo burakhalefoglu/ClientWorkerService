@@ -6,4 +6,5 @@ type WebsocketAdapter interface {
 
 func ListenServer(d WebsocketAdapter) {
 	d.ListenServer()
+
 }

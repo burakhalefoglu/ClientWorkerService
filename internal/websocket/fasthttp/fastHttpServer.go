@@ -3,9 +3,11 @@ package fastHttpServer
 import (
 	worker "ClientWorkerService/internal/websocket/fasthttp/worker"
 	"log"
+	"sync"
 
 	"github.com/valyala/fasthttp"
 )
+var wg sync.WaitGroup
 
 type FasthttpConn struct {
 	ConnString string
