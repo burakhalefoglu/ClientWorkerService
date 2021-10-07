@@ -29,6 +29,18 @@ func Work(ctx *fasthttp.RequestCtx, topic string) {
 			if(kafkaErr != nil){
 				log.Println(kafkaErr)
 				redisAdapter.SetDict(topic, message)
+				return
+			}
+			val := redisAdapter.GetDict(topic)
+			if(len(val.Val())>0){
+				for k, v := range val.Val() {
+					
+					kafkaErr := kafka.Produce(context.Background(), nil, []byte(v), topic)
+					if(kafkaErr == nil){
+						result := redisAdapter.DeleteDictField(topic,k,v)
+						log.Println(result)
+					}
+				}
 			}
 		}
 	})

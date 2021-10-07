@@ -13,11 +13,17 @@ var rdb = redis.NewClient(&redis.Options{
 	DB:       0,
 })
 
-func SetDict(key string, value []byte){
+func SetDict(key string, value []byte) *redis.StatusCmd{
 
-	rdb.HMSet(key, map[string]interface{}{ time.Now().String(): value})
+	return rdb.HMSet(key, map[string]interface{}{ time.Now().String(): value})
 }
-func GetDict(key string){
 
-	rdb.HGetAll(key)
+func GetDict(key string) *redis.StringStringMapCmd{
+
+	return rdb.HGetAll(key)
+}
+
+func DeleteDictField(key string, fields ...string)  *redis.IntCmd {
+
+	return rdb.HDel(key, fields...)
 }
