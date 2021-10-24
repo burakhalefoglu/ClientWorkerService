@@ -1,7 +1,8 @@
 package fastHttpServer
 
 import (
-	worker "ClientWorkerService/internal/websocket/fasthttp/worker"
+	"ClientWorkerService/internal/websocket/fasthttp/worker"
+	redisCache "ClientWorkerService/pkg/redis/redis"
 	"log"
 	"sync"
 
@@ -13,7 +14,7 @@ type FasthttpConn struct {
 	ConnString string
 }
 
-func (f FasthttpConn) ListenServer() { 
+func (f FasthttpConn) ListenServer() {
 	h := requestHandler
 	h = fasthttp.CompressHandler(h)
 	
@@ -27,11 +28,13 @@ func (f FasthttpConn) ListenServer() {
 func requestHandler(ctx *fasthttp.RequestCtx) {
 
 	v,err := trimFirstRune(string(ctx.Path()))
-	if(err){
+	if err {
 		ctx.Error("Unsupported path", fasthttp.StatusNotFound)
 		return
 	}
-	worker.Work(ctx,v)
+	worker.Work(ctx,&redisCache.RedisCache{
+		Client: redisCache.GetClient(),
+	}, v)
 }
 
 func trimFirstRune(s string) (string, bool) {

@@ -10,14 +10,16 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
-	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/goccy/go-json v0.7.9 // indirect
-	github.com/golang/snappy v0.0.3 // indirect
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/google/uuid v1.3.0
 	github.com/klauspost/compress v1.13.4 // indirect
-	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
-	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/savsgio/gotils v0.0.0-20200608150037-a5f6f5aef16c // indirect
-	github.com/segmentio/kafka-go v0.4.20 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.7.0
+)
+
+require (
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/confluentinc/confluent-kafka-go v1.7.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 )
