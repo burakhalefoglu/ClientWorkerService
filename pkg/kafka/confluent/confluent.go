@@ -7,9 +7,10 @@ import (
 	"os"
 )
 
+type Kafka struct {
+}
 
-
-func Produce(key *[]byte, value *[]byte, topic string) (err error) {
+func (k *Kafka) Produce(key *[]byte, value *[]byte, topic string) (err error) {
 
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "0.0.0.0:19091"})
 	if err != nil {
@@ -25,7 +26,7 @@ func Produce(key *[]byte, value *[]byte, topic string) (err error) {
 	return nil
 }
 
-func Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
+func (k *Kafka) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":    "192.168.1.1:9092",

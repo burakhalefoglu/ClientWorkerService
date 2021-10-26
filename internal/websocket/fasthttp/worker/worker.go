@@ -1,11 +1,11 @@
 package worker
 
 import (
-	Ikafka "ClientWorkerService/pkg/kafka"
-	cache "ClientWorkerService/pkg/redis"
+	IKafka "ClientWorkerService/pkg/kafka"
+	ICache "ClientWorkerService/pkg/redis"
 	"github.com/google/uuid"
 	"log"
-
+	
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 )
@@ -16,9 +16,14 @@ var upgrade = websocket.FastHTTPUpgrader{
 } 
 
 
-func Work(ctx *fasthttp.RequestCtx, cache cache.ICache, kafka Ikafka.IKafka , topic string) {
+func Work(ctx *fasthttp.RequestCtx, cache ICache.ICache, kafka IKafka.IKafka , topic string) {
 	err := upgrade.Upgrade(ctx, func(ws *websocket.Conn) {
-		defer ws.Close()
+		defer func(ws *websocket.Conn) {
+			err := ws.Close()
+			if err != nil {
+				
+			}
+		}(ws)
 		for {
 			_, message, err := ws.ReadMessage()
 			if err != nil {
@@ -30,9 +35,12 @@ func Work(ctx *fasthttp.RequestCtx, cache cache.ICache, kafka Ikafka.IKafka , to
 			kafkaErr := kafka.Produce(&id, &message, topic)
 			if kafkaErr != nil {
 				log.Println(kafkaErr)
-				cache.Add(topic, map[string]interface{}{
+				_, err := cache.Add(topic, map[string]interface{}{
 					uuid.New().String(): message,
 				})
+				if err != nil {
+					return 
+				}
 				return
 			}
 
