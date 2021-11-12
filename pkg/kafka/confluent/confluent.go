@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-type Kafka struct {
+type ConfluentKafka struct {
 }
 
-func (k *Kafka) Produce(key *[]byte, value *[]byte, topic string) (err error) {
+func (k *ConfluentKafka) Produce(key *[]byte, value *[]byte, topic string) (err error) {
 
-	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "0.0.0.0:19091"})
+	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "192.168.43.178:9092"})
 	if err != nil {
 		panic(err)
 	}
@@ -26,10 +26,10 @@ func (k *Kafka) Produce(key *[]byte, value *[]byte, topic string) (err error) {
 	return nil
 }
 
-func (k *Kafka) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
+func (k *ConfluentKafka) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":    "192.168.1.1:9092",
+		"bootstrap.servers":    "192.168.43.178:9092",
 		"group.id":             groupId,
 		"auto.offset.reset":    "smallest"})
 	if err != nil{

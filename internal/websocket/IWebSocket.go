@@ -1,12 +1,10 @@
 package IWebSocket
 
-import "sync"
-
 type IWebSocket interface {
-	ListenServer(wg *sync.WaitGroup)
+	ListenServer()
 }
 
-func ListenServer(d IWebSocket, wg *sync.WaitGroup) {
-	d.ListenServer(wg)
+func ListenServer(d IWebSocket) {
+	d.ListenServer()
 
 }
