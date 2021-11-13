@@ -3,6 +3,8 @@ package rediscache
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/joho/godotenv"
+	"os"
 )
 
 
@@ -11,9 +13,10 @@ type RedisCache struct {
 }
 
 func GetClient() *redis.Client{
+	godotenv.Load()
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
+		Addr:     os.Getenv("REDIS_CONN"),
+		Password: os.Getenv("REDIS_PASS"), // no password set
 		DB:       0,  // use default DB
 	})
 	return rdb

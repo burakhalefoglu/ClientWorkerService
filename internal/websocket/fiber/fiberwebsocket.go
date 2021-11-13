@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"log"
+	"os"
 	"sync"
 )
 
@@ -37,7 +38,7 @@ func (f fiberWs) ListenServer() {
 	go worker.Work(&wgGroup, app, "InventoryDataModel", &redisCache.RedisCache{ Client: redisCache.GetClient() }, &kafkago.KafkaGo{})
 	go worker.Work(&wgGroup, app, "OfferBehaviorModel", &redisCache.RedisCache{ Client: redisCache.GetClient() }, &kafkago.KafkaGo{})
 	go worker.Work(&wgGroup, app, "ChurnPredictionResultModel", &redisCache.RedisCache{ Client: redisCache.GetClient() }, &kafkago.KafkaGo{})
-	log.Fatal(app.Listen("localhost:8000"))
+	log.Fatal(app.Listen(os.Getenv("WEBSOCKET_CONN")))
 	wgGroup.Wait()
 
 }

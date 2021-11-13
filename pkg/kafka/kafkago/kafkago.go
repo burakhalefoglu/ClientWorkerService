@@ -3,6 +3,7 @@ package kafkago
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 type KafkaGo struct {}
 
 func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) {
-	writer, _ := writerConfigure([]string{"192.168.43.178:9092"}, uuid.New().String(), topic)
+	writer, _ := writerConfigure([]string{os.Getenv("KAFKA_BROKER")}, uuid.New().String(), topic)
 	message := kafka.Message{
 		Key:   *key,
 		Value: *value,
@@ -25,7 +26,7 @@ func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) 
 
 
 func (k *KafkaGo) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
-	reader, _ := readerConfigure([]string{"192.168.43.178:9092"}, groupId, topic)
+	reader, _ := readerConfigure([]string{os.Getenv("KAFKA_BROKER")}, groupId, topic)
 	defer reader.Close()
 	log.Println(reader.Stats().ClientID)
 	for {

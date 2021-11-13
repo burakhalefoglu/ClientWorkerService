@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.21.0
 	github.com/gofiber/websocket/v2 v2.0.12
 	github.com/google/uuid v1.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/segmentio/kafka-go v0.4.23
 	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.7.0
 )
