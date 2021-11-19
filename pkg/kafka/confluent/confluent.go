@@ -1,38 +1,43 @@
 package confluent
 
 import (
-	"fmt"
+	"ClientWorkerService/pkg/logger"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
-	"log"
 	"os"
 )
 
-type ConfluentKafka struct {
+type ConfluentKafkaGo struct {
+	Log logger.ILog
 }
 
-func (k *ConfluentKafka) Produce(key *[]byte, value *[]byte, topic string) (err error) {
+func (k *ConfluentKafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) {
 
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": os.Getenv("KAFKA_BROKER")})
 	if err != nil {
+		k.Log.SendPanicLog("ConfluentKafka", "Produce Connection Failed: ", err.Error())
 		panic(err)
 	}
-		p.Produce(&kafka.Message{
-			Key: *key,
-			TopicPartition: kafka.TopicPartition{Topic: &topic},
-			Value:          *value,
-		}, nil)
-	// Wait for message deliveries before shutting down
+	pErr := p.Produce(&kafka.Message{
+		Key:            *key,
+		TopicPartition: kafka.TopicPartition{Topic: &topic},
+		Value:          *value,
+	}, nil)
+	if pErr != nil {
+		return pErr
+	}
+	k.Log.SendInfoLog("ConfluentKafka", "Producer", topic, key)
 	p.Flush(15 * 1000)
 	return nil
 }
 
-func (k *ConfluentKafka) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
+func (k *ConfluentKafkaGo) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
 
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":    os.Getenv("KAFKA_BROKER"),
 		"group.id":             groupId,
 		"auto.offset.reset":    "smallest"})
 	if err != nil{
+		k.Log.SendPanicLog("ConfluentKafka", "Consumer Connection Failed: ", err.Error())
 		panic(err)
 	}
 
@@ -42,23 +47,25 @@ func (k *ConfluentKafka) Consume(topic string, groupId string, callback func(top
 		switch e := ev.(type) {
 		case *kafka.Message:
 			callErr := callback(topic, e.Value)
+			k.Log.SendInfoLog("ConfluentKafka", "Consumer", topic, groupId)
 			if callErr == nil{
 				go func() {
 					offsets, err := consumer.Commit()
 					if err != nil{
-						log.Printf("%% Reached %v\n", err)
+						k.Log.SendErrorfLog("ConfluentKafka",
+							"Consumer","%% Commit failed %v\n", offsets, err.Error())
 					}
-					log.Printf("%% Reached %v\n", offsets)
 				}()
 			}
 
 		case kafka.PartitionEOF:
-			log.Printf("%% Reached %v\n", e)
+			k.Log.SendErrorfLog("ConfluentKafka",
+				"Consumer","%% PartitionEOF %v\n", e, err.Error())
 		case kafka.Error:
-			fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
+			k.Log.SendErrorfLog("ConfluentKafka",
+				"Consumer","%% Kafka Error: %v\n", e, err.Error())
 			run = false
 		default:
-			log.Printf("Ignored %v\n", e)
 		}
 	}
 }

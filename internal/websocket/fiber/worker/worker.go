@@ -2,11 +2,11 @@ package worker
 
 import (
 	IKafka "ClientWorkerService/pkg/kafka"
+	"ClientWorkerService/pkg/logger"
 	ICache "ClientWorkerService/pkg/redis"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"github.com/google/uuid"
-	"log"
 	"sync"
 )
 
@@ -15,7 +15,8 @@ func Work(wgGroup *sync.WaitGroup,
 	app *fiber.App,
 	channel string,
 	cache ICache.ICache,
-	kafka IKafka.IKafka) {
+	kafka IKafka.IKafka,
+	log logger.ILog) {
 	app.Get("/" + channel, websocket.New(func(c *websocket.Conn) {
 
 		var (
@@ -24,15 +25,15 @@ func Work(wgGroup *sync.WaitGroup,
 		)
 		for {
 			if _, msg, err = c.ReadMessage(); err != nil {
-				log.Println("read:", err)
+				log.SendErrorLog("Work", "Work", channel, err)
 				break
 			}
-			log.Printf("recv: %s", msg)
+			log.SendInfoLog("Work", "Work", channel, "Message received")
 			var id = []byte(c.Query("clientId"))
 
 			kafkaErr := kafka.Produce(&id, &msg, channel)
 			if kafkaErr != nil {
-				log.Println(kafkaErr)
+				log.SendErrorLog("Work", "Work_Kafka_error", channel, kafkaErr)
 				_, err := cache.Add(channel, map[string]interface{}{
 					uuid.New().String(): msg,
 				})
@@ -41,11 +42,9 @@ func Work(wgGroup *sync.WaitGroup,
 				}
 				continue
 			}
-
 			val, err := cache.Get(channel)
 			if err != nil {
-				log.Fatal(err)
-				//! veri kaybı olma ihtimali oluşuyor!!!
+				log.SendFatalLog("Work", "Work_Cache_error", channel, err, "veri kaybı uyarısı!!!", val)
 				return
 			}
 
@@ -54,11 +53,11 @@ func Work(wgGroup *sync.WaitGroup,
 					message := []byte(v)
 					kafkaErr := kafka.Produce(&id, &message, channel)
 					if kafkaErr == nil {
-						result, err := cache.Delete(channel, k)
+						_, err := cache.Delete(channel, k)
 						if err != nil {
-							log.Println(result)
+							log.SendErrorLog("Work", "Work_kafkaErr_error",
+								channel, err)
 						}
-						log.Println(result)
 					}
 				}
 			}
