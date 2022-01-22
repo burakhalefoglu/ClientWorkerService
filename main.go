@@ -21,5 +21,5 @@ func main() {
 
 	fmt.Println("Starting listen!")
 	IWebSocket.ListenServer(fiberwebsocket.FiberWebSocket)
-	
+
 }

@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /client-worker-service ./cmd
+RUN go build -o /client-worker-service .
 
 EXPOSE 8000
 
