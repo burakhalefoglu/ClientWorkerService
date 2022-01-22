@@ -59,6 +59,7 @@ func (f fiberWs) ListenServer() {
 		f.Log.SendFatalLog("fiberWs", "ListenServer", err.Error())
 		return
 	}
+	f.Log.SendInfoLog("main", "client web server started")
 	wgGroup.Wait()
 
 }
