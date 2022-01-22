@@ -36,6 +36,7 @@ spec:
       containers:
         - name: client-worker
           image: CONTAINER_IMAGE
+          imagePullPolicy: Always
           env:
             - name: REDIS_HOST
               valueFrom:
