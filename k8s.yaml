@@ -59,9 +59,8 @@ spec:
                   name: app-config
                   key: logstash-host
           securityContext:
-            privileged: false
             readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
+            runAsNonRoot: true
           ports:
             - containerPort: 8000
           args:
