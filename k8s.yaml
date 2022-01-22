@@ -64,13 +64,21 @@ spec:
             allowPrivilegeEscalation: false
           ports:
             - containerPort: 8000
+          args:
+            - /bin/sh
+            - -c
+            - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
           livenessProbe:
-            tcpSocket:
-              port: 8000
-            initialDelaySeconds: 60
-            periodSeconds: 20
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
+            initialDelaySeconds: 30
+            periodSeconds: 5
           readinessProbe:
-            tcpSocket:
-              port: 8000
-            initialDelaySeconds: 60
-            periodSeconds: 20
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
+            initialDelaySeconds: 30
+            periodSeconds: 60
