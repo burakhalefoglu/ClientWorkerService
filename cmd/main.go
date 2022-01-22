@@ -3,14 +3,14 @@ package main
 import (
 	IWebSocket "ClientWorkerService/internal/websocket"
 	fiberwebsocket "ClientWorkerService/internal/websocket/fiber"
-	"github.com/joho/godotenv"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"runtime"
 )
 
 func main() {
-	_ = make([]byte, 10<<30) 
+	_ = make([]byte, 10<<30)
 	runtime.MemProfileRate = 0
 
 	err := godotenv.Load()
@@ -22,4 +22,3 @@ func main() {
 	fmt.Println("Starting listen!")
 	IWebSocket.ListenServer(fiberwebsocket.FiberWebSocket)
 }
-

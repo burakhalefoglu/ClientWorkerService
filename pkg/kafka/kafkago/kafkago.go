@@ -1,13 +1,13 @@
 package kafkago
 
 import (
+	"ClientWorkerService/pkg/helper"
 	"ClientWorkerService/pkg/logger"
 	"context"
-	"os"
+	"github.com/segmentio/kafka-go"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/snappy"
 )
 
@@ -16,7 +16,8 @@ type KafkaGo struct {
 }
 
 func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) {
-	writer, _ := writerConfigure([]string{os.Getenv("KAFKA_BROKER")}, uuid.New().String(), topic)
+
+	writer, _ := writerConfigure([]string{helper.ResolvePath("KAFKA_HOST", "KAFKA_PORT")}, uuid.New().String(), topic)
 	message := kafka.Message{
 		Key:   *key,
 		Value: *value,
@@ -27,32 +28,30 @@ func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) 
 	return err
 }
 
-
 func (k *KafkaGo) Consume(topic string, groupId string, callback func(topic string, data []byte) error) {
-	reader, _ := readerConfigure([]string{os.Getenv("KAFKA_BROKER")}, groupId, topic)
+	reader, _ := readerConfigure([]string{helper.ResolvePath("KAFKA_HOST", "KAFKA_PORT")}, groupId, topic)
 	defer func(reader *kafka.Reader) {
 		err := reader.Close()
 		if err != nil {
-			k.Log.SendErrorLog("KafkaGo", "Consume", "failed to reader.Close() messages:" + err.Error())
+			k.Log.SendErrorLog("KafkaGo", "Consume", "failed to reader.Close() messages:"+err.Error())
 		}
 	}(reader)
 	k.Log.SendInfoLog("KafkaGo", "Consume", reader.Stats().ClientID)
 	for {
 		m, err := reader.FetchMessage(context.Background())
 		if err != nil {
-			k.Log.SendFatalLog("KafkaGo", "Consume", "error while receiving message: " + err.Error())
+			k.Log.SendFatalLog("KafkaGo", "Consume", "error while receiving message: "+err.Error())
 			continue
 		}
 		k.Log.SendInfoLog("KafkaGo", "Consume", topic, groupId)
 		callErr := callback(topic, m.Value)
 		if callErr == nil {
 			if err := reader.CommitMessages(context.Background(), m); err != nil {
-				k.Log.SendFatalLog("KafkaGo", "Consume", "failed to commit messages:" + err.Error())
+				k.Log.SendFatalLog("KafkaGo", "Consume", "failed to commit messages:"+err.Error())
 			}
 		}
 	}
 }
-
 
 func writerConfigure(kafkaBrokerUrls []string, clientId string, topic string) (w *kafka.Writer, err error) {
 	dialer := &kafka.Dialer{
