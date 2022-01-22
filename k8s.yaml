@@ -62,9 +62,6 @@ spec:
             privileged: false
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
-          allowedHostPaths:
-            - pathPrefix: "/tmp/healthy"
-              readOnly: false
           ports:
             - containerPort: 8000
           livenessProbe:
