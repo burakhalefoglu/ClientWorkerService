@@ -60,7 +60,6 @@ spec:
                   key: logstash-host
           securityContext:
             readOnlyRootFilesystem: true
-            runAsNonRoot: true
           ports:
             - containerPort: 8000
           args:
