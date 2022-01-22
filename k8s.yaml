@@ -58,21 +58,23 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: logstash-host
-          securityContext:
-            privileged: false
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
           ports:
             - containerPort: 8000
+          args:
+            - /bin/sh
+            - -c
+            - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
           livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8000
-            periodSeconds: 1
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
             initialDelaySeconds: 30
+            periodSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8000
-            periodSeconds: 1
+            exec:
+              command:
+                - cat
+                - /tmp/healthy
             initialDelaySeconds: 30
+            periodSeconds: 5
