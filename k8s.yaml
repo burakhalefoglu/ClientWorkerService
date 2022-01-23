@@ -69,7 +69,7 @@ spec:
                 - /app/healthy.txt
             initialDelaySeconds: 60
             periodSeconds: 5
-          args:
-            - rm -rf /app/aws-iam-authenticator
-            - rm -rf /app/kubectl
-            - rm -rf /app/Dockerfile
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
