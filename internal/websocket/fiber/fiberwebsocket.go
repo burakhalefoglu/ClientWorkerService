@@ -32,6 +32,7 @@ func (f fiberWs) ListenServer() {
 
 	var wgGroup sync.WaitGroup
 	wgGroup.Add(11)
+	helper.CreateHealthFile()
 	go worker.Work(&wgGroup, app, "AdvEventDataModel", &redisCache.RedisCache{Client: redisCache.GetClient(), Log: f.Log},
 		&kafkago.KafkaGo{Log: f.Log}, f.Log)
 	go worker.Work(&wgGroup, app, "BuyingEventDataModel", &redisCache.RedisCache{Client: redisCache.GetClient(), Log: f.Log},

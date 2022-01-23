@@ -3,6 +3,7 @@ package main
 import (
 	IWebSocket "ClientWorkerService/internal/websocket"
 	fiberwebsocket "ClientWorkerService/internal/websocket/fiber"
+	"ClientWorkerService/pkg/helper"
 	"fmt"
 	"github.com/joho/godotenv"
 	"log"
@@ -10,7 +11,7 @@ import (
 )
 
 func main() {
-	_ = make([]byte, 10<<30)
+	defer helper.DeleteHealthFile()
 	runtime.MemProfileRate = 0
 
 	err := godotenv.Load()
