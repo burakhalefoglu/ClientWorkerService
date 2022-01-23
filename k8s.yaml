@@ -71,5 +71,4 @@ spec:
             periodSeconds: 5
           securityContext:
             privileged: false
-            readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
