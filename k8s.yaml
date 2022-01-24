@@ -69,6 +69,13 @@ spec:
         - name: client-worker
           image: CONTAINER_IMAGE
           imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "500M"
+              cpu: "250m"
+            limits:
+              memory: "1000M"
+              cpu: "0.5"
           env:
             - name: REDIS_HOST
               valueFrom:
