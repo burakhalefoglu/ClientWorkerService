@@ -49,7 +49,7 @@ metadata:
   name: client-worker
   namespace: worker-app-dev
 spec:
-  replicas: 4
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
