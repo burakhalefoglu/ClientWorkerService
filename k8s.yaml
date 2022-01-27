@@ -64,7 +64,7 @@ spec:
         app: client-worker
     spec:
       nodeSelector:
-        dedicated: deamond
+        dedicated: spot
       containers:
         - name: client-worker
           image: CONTAINER_IMAGE
