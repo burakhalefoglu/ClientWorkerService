@@ -69,8 +69,6 @@ spec:
         - name: client-worker
           image: CONTAINER_IMAGE
           imagePullPolicy: Always
-          imagePullSecrets:
-          - name: regcred
           resources:
             requests:
               memory: "150M"
