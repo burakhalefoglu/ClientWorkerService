@@ -71,11 +71,11 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "250M"
-              cpu: "0.1"
+              memory: "150M"
+              cpu: "0.05"
             limits:
-              memory: "500M"
-              cpu: "0.2"
+              memory: "200M"
+              cpu: "0.1"
           env:
             - name: REDIS_HOST
               valueFrom:
