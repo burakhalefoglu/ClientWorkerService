@@ -2,9 +2,9 @@ package kafkago
 
 import (
 	"ClientWorkerService/pkg/helper"
-	"ClientWorkerService/pkg/logger"
 	"context"
 	"github.com/segmentio/kafka-go"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,7 +12,6 @@ import (
 )
 
 type KafkaGo struct {
-	Log logger.ILog
 }
 
 func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) {
@@ -24,7 +23,7 @@ func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) 
 		Time:  time.Now(),
 	}
 	err = writer.WriteMessages(context.Background(), message)
-	k.Log.SendInfoLog("KafkaGo", "Producer", topic, key)
+	log.Print("KafkaGo", "Producer", topic, key)
 	return err
 }
 
@@ -33,21 +32,21 @@ func (k *KafkaGo) Consume(topic string, groupId string, callback func(topic stri
 	defer func(reader *kafka.Reader) {
 		err := reader.Close()
 		if err != nil {
-			k.Log.SendErrorLog("KafkaGo", "Consume", "failed to reader.Close() messages:"+err.Error())
+			log.Fatal("KafkaGo", "Consume", "failed to reader.Close() messages:"+err.Error())
 		}
 	}(reader)
-	k.Log.SendInfoLog("KafkaGo", "Consume", reader.Stats().ClientID)
+	log.Print("KafkaGo", "Consume", reader.Stats().ClientID)
 	for {
 		m, err := reader.FetchMessage(context.Background())
 		if err != nil {
-			k.Log.SendFatalLog("KafkaGo", "Consume", "error while receiving message: "+err.Error())
+			log.Fatal("KafkaGo", "Consume", "error while receiving message: "+err.Error())
 			continue
 		}
-		k.Log.SendInfoLog("KafkaGo", "Consume", topic, groupId)
+		log.Print("KafkaGo", "Consume", topic, groupId)
 		callErr := callback(topic, m.Value)
 		if callErr == nil {
 			if err := reader.CommitMessages(context.Background(), m); err != nil {
-				k.Log.SendFatalLog("KafkaGo", "Consume", "failed to commit messages:"+err.Error())
+				log.Fatal("KafkaGo", "Consume", "failed to commit messages:"+err.Error())
 			}
 		}
 	}

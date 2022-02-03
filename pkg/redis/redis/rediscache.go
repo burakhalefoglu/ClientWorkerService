@@ -2,7 +2,6 @@ package rediscache
 
 import (
 	"ClientWorkerService/pkg/helper"
-	"ClientWorkerService/pkg/logger"
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
@@ -11,7 +10,6 @@ import (
 
 type RedisCache struct {
 	Client *redis.Client
-	Log    logger.ILog
 }
 
 func GetClient() *redis.Client {
