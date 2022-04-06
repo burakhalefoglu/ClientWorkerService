@@ -1,32 +1,32 @@
 
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: client-worker-ws-ingress
-  namespace: worker-app-dev
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "ws-cookie"
-    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/affinity-mode: persistent
-    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
-spec:
-  tls:
-    - hosts:
-        - ws.appneuron.net
-      secretName: ws-tls
-  rules:
-    - host: ws.appneuron.net
-      http:
-        paths:
-          - path: /client
-            pathType: Prefix
-            backend:
-              serviceName: client-worker-service
-              servicePort: 8000
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: client-worker-ws-ingress
+#   namespace: worker-app-dev
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+#     nginx.ingress.kubernetes.io/affinity: "cookie"
+#     nginx.ingress.kubernetes.io/session-cookie-name: "ws-cookie"
+#     nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+#     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     nginx.ingress.kubernetes.io/affinity-mode: persistent
+#     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+# spec:
+#   tls:
+#     - hosts:
+#         - ws.appneuron.net
+#       secretName: ws-tls
+#   rules:
+#     - host: ws.appneuron.net
+#       http:
+#         paths:
+#           - path: /client
+#             pathType: Prefix
+#             backend:
+#               serviceName: client-worker-service
+#               servicePort: 8000
 
 ---
 apiVersion: v1
@@ -63,19 +63,17 @@ spec:
       labels:
         app: client-worker
     spec:
-      nodeSelector:
-        dedicated: spot
       containers:
         - name: client-worker
           image: CONTAINER_IMAGE
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "50M"
-              cpu: "0.01"
+              cpu: "50m"
+              memory: "150Mi"
             limits:
-              memory: "100M"
-              cpu: "0.02"
+              cpu: "50m"
+              memory: "150Mi"
           env:
             - name: REDIS_HOST
               valueFrom:
@@ -92,11 +90,6 @@ spec:
                 configMapKeyRef:
                   name: worker-app-config
                   key: kafka-host
-            - name: LOGSTASH_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: worker-app-config
-                  key: logstash-host
           ports:
             - name: ws-port
               containerPort: 8000
