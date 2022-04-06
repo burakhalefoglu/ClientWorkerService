@@ -15,6 +15,7 @@ import (
 
 func main() {
 	defer helper.DeleteHealthFile()
+	logger.Log.App = "ClientWorkerService"
 	runtime.MemProfileRate = 0
 
 	err := godotenv.Load()
@@ -22,7 +23,6 @@ func main() {
 		log.Fatal("Error loading .env file")
 		return
 	}
-	logger.Log.App = "ClientWorkerService"
 
 	fmt.Println("Starting listen!")
 	IWebSocket.ListenServer(fiberwebsocket.FiberWebSocket)
