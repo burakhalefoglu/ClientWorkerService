@@ -7,6 +7,9 @@ import (
 	redisCache "ClientWorkerService/pkg/redis/redis"
 	"log"
 	"sync"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/websocket/v2"
 )
 
 type fiberWs struct {
