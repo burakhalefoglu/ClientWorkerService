@@ -5,8 +5,6 @@ import (
 	"ClientWorkerService/pkg/helper"
 	"ClientWorkerService/pkg/kafka/kafkago"
 	redisCache "ClientWorkerService/pkg/redis/redis"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/websocket/v2"
 	"log"
 	"sync"
 )
@@ -51,7 +49,7 @@ func (f fiberWs) ListenServer() {
 		&kafkago.KafkaGo{})
 	go worker.Work(&wgGroup, app, "ChurnPredictionResultModel", &redisCache.RedisCache{Client: redisCache.GetClient()},
 		&kafkago.KafkaGo{})
-	err := app.Listen(helper.ResolvePath("WEBSOCKET_HOST", "WEBSOCKET_PORT"))
+	err := app.Listen("localhost:8080")
 	if err != nil {
 		log.Fatal("fiberWs", "ListenServer", err.Error())
 		return

@@ -3,12 +3,10 @@ package kafkago
 import (
 	"ClientWorkerService/pkg/helper"
 	"context"
-	"github.com/segmentio/kafka-go"
 	"log"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/segmentio/kafka-go/snappy"
 )
 
 type KafkaGo struct {
@@ -59,13 +57,12 @@ func writerConfigure(kafkaBrokerUrls []string, clientId string, topic string) (w
 	}
 
 	config := kafka.WriterConfig{
-		Brokers:          kafkaBrokerUrls,
-		Topic:            topic,
-		Balancer:         &kafka.LeastBytes{},
-		Dialer:           dialer,
-		WriteTimeout:     10 * time.Second,
-		ReadTimeout:      10 * time.Second,
-		CompressionCodec: snappy.NewCompressionCodec(),
+		Brokers:      kafkaBrokerUrls,
+		Topic:        topic,
+		Balancer:     &kafka.LeastBytes{},
+		Dialer:       dialer,
+		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  10 * time.Second,
 	}
 	w = kafka.NewWriter(config)
 	return w, nil
