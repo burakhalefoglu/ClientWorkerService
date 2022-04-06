@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/appneuroncompany/light-logger/clogger"
 )
 
 var path = "healthy.txt"
@@ -18,28 +20,27 @@ func CreateHealthFile() {
 	var _, err = os.Stat(path)
 	if os.IsNotExist(err) {
 		var file, err = os.Create(path)
-		if isError(err) {
-			fmt.Println("File Created Failed", path)
+		if err != nil {
+			clogger.Error(&map[string]interface{}{
+				"message: ": fmt.Sprintf("Fail create file on path: %s", path),
+				"error: ":   err})
 			return
 		}
 		defer file.Close()
-		fmt.Println("File Created Successfully", path)
+		clogger.Info(&map[string]interface{}{
+			"info message: ": fmt.Sprintf("File created successfully on path: %s", path)})
 	}
 }
 
 func DeleteHealthFile() {
 	var err = os.Remove(path)
-	if isError(err) {
-		fmt.Println("File deleting failed")
+	if err != nil {
+		clogger.Error(&map[string]interface{}{
+			"message: ": fmt.Sprintf("Fail delete file on path: %s", path),
+			"error: ":   err,
+		})
 		return
 	}
-	fmt.Println("File Deleted")
-
-}
-
-func isError(err error) bool {
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	return err != nil
+	clogger.Info(&map[string]interface{}{
+		"info message: ": fmt.Sprintf("File deleted successfully on path: %s", path)})
 }

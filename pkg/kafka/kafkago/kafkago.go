@@ -3,9 +3,9 @@ package kafkago
 import (
 	"ClientWorkerService/pkg/helper"
 	"context"
-	"log"
 	"time"
 
+	"github.com/appneuroncompany/light-logger/clogger"
 	"github.com/google/uuid"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/snappy"
@@ -23,7 +23,6 @@ func (k *KafkaGo) Produce(key *[]byte, value *[]byte, topic string) (err error) 
 		Time:  time.Now(),
 	}
 	err = writer.WriteMessages(context.Background(), message)
-	log.Print("KafkaGo", "Producer", topic, key)
 	return err
 }
 
@@ -32,21 +31,29 @@ func (k *KafkaGo) Consume(topic string, groupId string, callback func(topic stri
 	defer func(reader *kafka.Reader) {
 		err := reader.Close()
 		if err != nil {
-			log.Fatal("KafkaGo", "Consume", "failed to reader.Close() messages:"+err.Error())
+			clogger.Error(&map[string]interface{}{
+				"KafkaGo consume err message ": err,
+			})
 		}
 	}(reader)
-	log.Print("KafkaGo", "Consume", reader.Stats().ClientID)
+	clogger.Info(&map[string]interface{}{
+		"KafkaGo consume message ": reader.Stats().ClientID,
+	})
+
 	for {
 		m, err := reader.FetchMessage(context.Background())
 		if err != nil {
-			log.Fatal("KafkaGo", "Consume", "error while receiving message: "+err.Error())
+			clogger.Error(&map[string]interface{}{
+				"KafkaGo consume error while receiving message ": err,
+			})
 			continue
 		}
-		log.Print("KafkaGo", "Consume", topic, groupId)
 		callErr := callback(topic, m.Value)
 		if callErr == nil {
 			if err := reader.CommitMessages(context.Background(), m); err != nil {
-				log.Fatal("KafkaGo", "Consume", "failed to commit messages:"+err.Error())
+				clogger.Error(&map[string]interface{}{
+					"KafkaGo failed to commit messages": err,
+				})
 			}
 		}
 	}

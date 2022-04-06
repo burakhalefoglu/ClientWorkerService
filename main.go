@@ -5,9 +5,12 @@ import (
 	fiberwebsocket "ClientWorkerService/internal/websocket/fiber"
 	"ClientWorkerService/pkg/helper"
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"runtime"
+
+	"github.com/joho/godotenv"
+
+	logger "github.com/appneuroncompany/light-logger"
 )
 
 func main() {
@@ -19,6 +22,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 		return
 	}
+	logger.Log.App = "ClientWorkerService"
 
 	fmt.Println("Starting listen!")
 	IWebSocket.ListenServer(fiberwebsocket.FiberWebSocket)

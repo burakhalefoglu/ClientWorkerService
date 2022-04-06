@@ -11,10 +11,14 @@ require (
 	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.8.2
 )
 
-require github.com/pierrec/lz4/v4 v4.1.14 // indirect
+require (
+	github.com/goccy/go-json v0.9.4 // indirect
+	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/appneuroncompany/light-logger v0.0.3
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/confluentinc/confluent-kafka-go v1.8.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
